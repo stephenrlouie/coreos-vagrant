@@ -6,12 +6,13 @@ require 'fileutils'
 Vagrant.require_version ">= 1.6.0"
 
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
+SSH_KEY = File.join(File.dirname(__FILE__), "ansible.rsa.pub")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $instance_name_prefix = "core"
-$update_channel = "alpha"
+$update_channel = "stable"
 $image_version = "current"
 $enable_serial_logging = false
 $share_home = false
@@ -91,6 +92,7 @@ Vagrant.configure("2") do |config|
             v.vmx["serial0.tryNoRxLoss"] = "FALSE"
           end
         end
+      
 
         config.vm.provider :virtualbox do |vb, override|
           vb.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
@@ -122,6 +124,10 @@ Vagrant.configure("2") do |config|
 
       ip = "172.17.8.#{i+100}"
       config.vm.network :private_network, ip: ip
+     
+      #Will only support up to 9  
+      mac = "00000000000#{i}"
+      config.vm.network "private_network", virtualbox__intnet: "prov", :mac => mac
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
@@ -136,6 +142,12 @@ Vagrant.configure("2") do |config|
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      end
+      
+      if File.exist?(SSH_KEY)
+        config.vm.provision :file, :source => "#{SSH_KEY}", :destination => "/tmp/ansible.rsa.pub"
+        config.vm.provision :shell, :inline => "mv /tmp/ansible.rsa.pub /home/core/.ssh/authorized_keys.d", :privileged => true
+        config.vm.provision :shell, :inline => "cat /home/core/.ssh/authorized_keys.d/ansible.rsa.pub >> /home/core/.ssh/authorized_keys", :privileged => true
       end
 
     end
