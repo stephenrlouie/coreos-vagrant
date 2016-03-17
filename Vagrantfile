@@ -10,7 +10,7 @@ SSH_KEY = File.join(File.dirname(__FILE__), "ansible.rsa.pub")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
-$num_instances = 1
+$num_instances = 3
 $instance_name_prefix = "core"
 $update_channel = "stable"
 $image_version = "current"
@@ -125,8 +125,15 @@ Vagrant.configure("2") do |config|
       ip = "172.17.8.#{i+100}"
       config.vm.network :private_network, ip: ip
      
-      #Will only support up to 9  
-      mac = "00000000000#{i}"
+      #Will only support up to 9
+      if i <= 15
+        hex = i.to_s(16)  
+        mac = "00000000000#{hex}"
+      else
+        hex = i.to_s(16)
+        mac = "0000000000#{hex}"
+      end
+      
       config.vm.network "private_network", virtualbox__intnet: "prov", :mac => mac
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
