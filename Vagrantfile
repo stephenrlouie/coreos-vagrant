@@ -10,14 +10,14 @@ SSH_KEY = File.join(File.dirname(__FILE__), "ansible.rsa.pub")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
-$num_instances = 1
+$num_instances = 4
 $instance_name_prefix = "core"
 $update_channel = "stable"
 $image_version = "current"
 $enable_serial_logging = false
 $share_home = false
 $vm_gui = false
-$vm_memory = 1024
+$vm_memory = 1536
 $vm_cpus = 1
 $shared_folders = {}
 $forwarded_ports = {}
