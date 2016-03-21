@@ -10,14 +10,14 @@ SSH_KEY = File.join(File.dirname(__FILE__), "ansible.rsa.pub")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
-$num_instances = 4
+$num_instances = 1
 $instance_name_prefix = "core"
 $update_channel = "stable"
 $image_version = "current"
 $enable_serial_logging = false
 $share_home = false
 $vm_gui = false
-$vm_memory = 1536
+$vm_memory = 1024
 $vm_cpus = 1
 $shared_folders = {}
 $forwarded_ports = {}
@@ -156,6 +156,8 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, :inline => "mv /tmp/ansible.rsa.pub /home/core/.ssh/authorized_keys.d", :privileged => true
         config.vm.provision :shell, :inline => "cat /home/core/.ssh/authorized_keys.d/ansible.rsa.pub >> /home/core/.ssh/authorized_keys", :privileged => true
       end
+
+    config.vm.provision :shell, :path => "tmp_resize.sh", :privileged => true
 
     end
   end
