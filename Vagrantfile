@@ -10,7 +10,7 @@ SSH_KEY = File.join(File.dirname(__FILE__), "ansible.rsa.pub")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
-$num_instances = 1
+$num_instances = 3
 $instance_name_prefix = "core"
 $update_channel = "stable"
 $image_version = "current"
@@ -122,10 +122,6 @@ Vagrant.configure("2") do |config|
         vb.cpus = vm_cpus
       end
 
-      #ip = "172.17.8.#{i+100}"
-      #config.vm.network :private_network, ip: ip
-     
-      #Will only support up to 9
       if i <= 15
         hex = i.to_s(16)  
         mac = "00000000000#{hex}"
@@ -133,8 +129,12 @@ Vagrant.configure("2") do |config|
         hex = i.to_s(16)
         mac = "0000000000#{hex}"
       end
-      
-      config.vm.network "private_network", virtualbox__intnet: "prov", :mac => mac
+     
+      config.vm.provider "virtualbox" do |vb|
+        vb.customize ["modifyvm", :id, "--nic2", "intnet"]
+        vb.customize ["modifyvm", :id, "--intnet2", "prov"]
+        vb.customize ["modifyvm", :id, "--macaddress2", mac]
+      end 
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
@@ -156,8 +156,10 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, :inline => "mv /tmp/ansible.rsa.pub /home/core/.ssh/authorized_keys.d", :privileged => true
         config.vm.provision :shell, :inline => "cat /home/core/.ssh/authorized_keys.d/ansible.rsa.pub >> /home/core/.ssh/authorized_keys", :privileged => true
       end
-
-    config.vm.provision :shell, :path => "tmp_resize.sh", :privileged => true
+    
+      if $vm_memory < 1536 
+        config.vm.provision :shell, :path => "tmp_resize.sh", :privileged => true
+      end 
 
     end
   end
