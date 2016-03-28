@@ -2,6 +2,10 @@
 - The **Vagrant Boot Managed Nodes** for the Gemini Project.
 - Must be stood up after the [Gemini Master] (https://github.com/stephenrlouie/PXE-Boot-VM/tree/gemini) is stood up so the ansibla.rsa key is present.
 
+##Demo
+- [Streaming Link] (https://cisco.webex.com/ciscosales/ldr.php?RCID=1685081ad9ff3361b1fcc68ceb24a282)
+- [Download Link] (https://cisco.webex.com/ciscosales/lsr.php?RCID=b3fc3aa5faa81d5b5c608cf7199521f9)
+
 ## Streamlined setup
 
 1) Install dependencies
@@ -17,7 +21,7 @@ cd coreos-vagrant
 git checkout gemini
 ```
 
-3) Start up the Gemini Master
+3) Start up the Gemini Master. See instructions [here] (https://github.com/stephenrlouie/PXE-Boot-VM/tree/gemini)
 
 ```
 git clone https://github.com/stephenrlouie/PXE-Boot-VM.git
@@ -26,6 +30,10 @@ git checkout gemini
 ```
 
 4) Copy the `ansible.rsa` from the Gemini Master to this home directory
+
+```
+cp <path_to_Gemini_Master>/ansible.rsa <path_to_coreos-vagrant>
+```
 
 5) Startup and SSH
 
