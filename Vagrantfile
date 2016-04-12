@@ -6,7 +6,7 @@ require 'fileutils'
 Vagrant.require_version ">= 1.6.0"
 
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
-SSH_KEY = File.join(File.dirname(__FILE__), "ansible.rsa.pub")
+SSH_KEY = File.join(File.dirname(__FILE__), "id_rsa.pub")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
@@ -152,9 +152,9 @@ Vagrant.configure("2") do |config|
       end
       
       if File.exist?(SSH_KEY)
-        config.vm.provision :file, :source => "#{SSH_KEY}", :destination => "/tmp/ansible.rsa.pub"
-        config.vm.provision :shell, :inline => "mv /tmp/ansible.rsa.pub /home/core/.ssh/authorized_keys.d", :privileged => true
-        config.vm.provision :shell, :inline => "cat /home/core/.ssh/authorized_keys.d/ansible.rsa.pub >> /home/core/.ssh/authorized_keys", :privileged => true
+        config.vm.provision :file, :source => "#{SSH_KEY}", :destination => "/tmp/id_rsa.pub"
+        config.vm.provision :shell, :inline => "mv /tmp/id_rsa.pub /home/core/.ssh/authorized_keys.d", :privileged => true
+        config.vm.provision :shell, :inline => "cat /home/core/.ssh/authorized_keys.d/id_rsa.pub >> /home/core/.ssh/authorized_keys", :privileged => true
       end
     
       if $vm_memory < 1536 
